@@ -34,11 +34,28 @@ function viewOf(t){
   return {...t,n:o.name||t.n,h:o.hours||t.h,alcohol:o.alcohol||"",alcoholText:o.alcoholText||""};
 }
 
+function allTraders(){
+  return [...T,...U].map(viewOf);
+}
+
 function alcoholBadge(t){
   if(t.alcohol==="serve") return '<span class="badge alcohol">🍺 Serves alcohol</span>';
   if(t.alcohol==="both") return '<span class="badge alcohol">🍺 Serves + takeaway</span>';
   if(t.alcohol==="retail") return '<span class="badge alcohol retail">🍷 Sells alcohol</span>';
   return '';
+}
+
+function statusBadges(t){
+  const closed=t.s==="closed"?'<span class="badge closed">Closed</span>':'';
+  const verify=t.s==="verify"?'<span class="badge verify">Verify location</span>':'';
+  return closed+verify;
+}
+
+function matchesFilters(t){
+  const s=q('#ms').value.trim().toLowerCase();
+  const catOK=activeCat==='all'||(activeCat==='alcohol'?Boolean(t.alcohol):t.c===activeCat);
+  const hay=`${t.n} ${t.u} ${t.z} ${t.d} ${t.h} ${t.x||''} ${t.alcoholText}`.toLowerCase();
+  return catOK&&(!s||hay.includes(s));
 }
 
 qa('.tab').forEach(b=>b.addEventListener('click',()=>{
@@ -79,16 +96,24 @@ function render(){
 }
 
 function filter(){
-  const s=q('#ms').value.trim().toLowerCase();
   qa('.stall').forEach(b=>{
     const raw=T.find(x=>x.id===b.dataset.id);
     const t=viewOf(raw);
-    const catOK=activeCat==='all'||(activeCat==='alcohol'?Boolean(t.alcohol):t.c===activeCat);
-    const hay=`${t.n} ${t.u} ${t.z} ${t.d} ${t.alcoholText}`.toLowerCase();
-    const ok=catOK&&(!s||hay.includes(s));
+    const ok=matchesFilters(t);
     b.classList.toggle('hide',!ok);
     if(!ok&&selectedId===t.id) clearSelection();
   });
+
+  qa('#unplaced button').forEach(b=>{
+    const raw=U.find(x=>x.id===b.dataset.id);
+    if(!raw)return;
+    const t=viewOf(raw);
+    const ok=matchesFilters(t);
+    b.classList.toggle('hide',!ok);
+    if(!ok&&selectedId===t.id) clearSelection();
+  });
+
+  renderDirectory();
 }
 
 function toggleTrader(t,anchor){
@@ -107,6 +132,7 @@ function selectTrader(t,anchor){
     b.setAttribute('aria-pressed',on?'true':'false');
   });
   qa('#unplaced button').forEach(b=>b.classList.toggle('sel',b.dataset.id===t.id));
+  renderDirectory();
   showBubble(t,anchor);
 }
 
@@ -117,17 +143,27 @@ function clearSelection(){
   const bubble=q('#mapBubble');
   bubble.hidden=true;
   bubble.classList.remove('below','unplaced');
+  renderDirectory();
+}
+
+function centreAnchor(anchor){
+  if(!anchor)return;
+  const wrap=q('.wrap');
+  const plan=q('.plan');
+  const pr=plan.getBoundingClientRect();
+  const br=anchor.getBoundingClientRect();
+  const anchorCentre=(br.left-pr.left)+(br.width/2);
+  const target=Math.max(0,Math.min(wrap.scrollWidth-wrap.clientWidth,anchorCentre-(wrap.clientWidth/2)));
+  wrap.scrollTo({left:target,behavior:'smooth'});
 }
 
 function showBubble(t,anchor){
   const bubble=q('#mapBubble');
-  const closed=t.s==='closed'?'<span class="badge closed">Closed</span>':'';
-  const verify=t.s==='verify'?'<span class="badge verify">Verify location</span>':'';
   bubble.innerHTML=`
     <button class="bubble-close" type="button" aria-label="Close trader details">×</button>
     <h3>${t.n}</h3>
     <div class="note">${t.z} · Unit ${t.u}</div>
-    <div class="bubble-badges"><span class="badge">${catName[t.c]||t.c}</span>${alcoholBadge(t)}${closed}${verify}</div>
+    <div class="bubble-badges"><span class="badge">${catName[t.c]||t.c}</span>${alcoholBadge(t)}${statusBadges(t)}</div>
     <p class="desc">${t.d}</p>
     <div class="hours"><b>Opening times</b><br>${t.h}</div>
     ${t.alcoholText?`<div class="alcohol-info">${t.alcoholText}</div>`:''}
@@ -150,11 +186,58 @@ function showBubble(t,anchor){
   const br=anchor.getBoundingClientRect();
   const x=br.left-pr.left+(br.width/2);
   const y=br.top-pr.top;
-  const pad=170;
+  const pad=165;
   const safeX=Math.max(pad,Math.min(plan.clientWidth-pad,x));
   bubble.style.left=safeX+'px';
   bubble.style.top=(y>230?y:y+br.height)+'px';
   bubble.classList.toggle('below',y<=230);
+
+  centreAnchor(anchor);
+}
+
+function directoryCard(t){
+  return `
+    <button type="button" class="directory-card${selectedId===t.id?' selected':''}" data-id="${t.id}" aria-pressed="${selectedId===t.id?'true':'false'}">
+      <div class="directory-top">
+        <div>
+          <span class="directory-zone">${t.z} · Unit ${t.u}</span>
+          <strong>${t.n}</strong>
+        </div>
+        <span class="badge">${catName[t.c]||t.c}</span>
+      </div>
+      <div class="directory-badges">${alcoholBadge(t)}${statusBadges(t)}</div>
+      <p>${t.d}</p>
+      <div class="directory-hours"><b>Opening times</b><span>${t.h}</span></div>
+      ${t.alcoholText?`<div class="directory-extra alcohol-info">${t.alcoholText}</div>`:''}
+      ${t.x?`<div class="directory-extra warn">${t.x}</div>`:''}
+    </button>`;
+}
+
+function renderDirectory(){
+  const all=allTraders();
+  const visible=selectedId
+    ? all.filter(t=>t.id===selectedId)
+    : all.filter(matchesFilters);
+
+  q('#directoryCount').textContent=selectedId
+    ? '1 selected trader'
+    : `${visible.length} trader${visible.length===1?'':'s'} shown`;
+
+  q('#traderDirectory').innerHTML=visible.length
+    ? visible.map(directoryCard).join('')
+    : '<div class="directory-empty">No traders match the current filters.</div>';
+
+  qa('.directory-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const t=all.find(x=>x.id===card.dataset.id);
+      if(!t)return;
+      const anchor=q(`.stall[data-id="${t.id}"]`);
+      toggleTrader(t,anchor);
+      if(anchor&&selectedId===t.id){
+        setTimeout(()=>anchor.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),40);
+      }
+    });
+  });
 }
 
 q('#ms').addEventListener('input',filter);
