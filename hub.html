@@ -1,1 +1,57 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Newcastle City Centre Explorer</title><link rel="stylesheet" href="./hub.css"><link rel="stylesheet" href="./hub-v2.css"></head><body><div class="shell"><div class="top"><div><small>Newcastle city centre</small><h1>Explorer hub</h1></div><a href="./index.html">Open original coffee guide ↗</a></div><div class="tabs" aria-label="Choose map"><button class="tab on" type="button" data-v="coffee">☕ Coffee map</button><button class="tab" type="button" data-v="market">🏛 Grainger Market</button></div><section id="coffee" class="view on"><iframe class="frame" src="./index.html" title="Newcastle Top 10 coffee map"></iframe></section><section id="market" class="view"><div class="market"><main class="panel"><div class="head"><div><h2>Grainger Market indoor map</h2><div class="note">Indoor schematic using Arcade + Alleys 1–4 and published unit references. <b>Schematic / not to scale.</b></div></div><div class="filters"><input id="ms" type="search" placeholder="Find trader or product…" aria-label="Search market traders"><div class="cat-buttons" role="group" aria-label="Filter market traders"><button class="cat-btn on" type="button" data-cat="all">All traders</button><button class="cat-btn" type="button" data-cat="eat">Eat & drink</button><button class="cat-btn" type="button" data-cat="groceries">Groceries</button><button class="cat-btn" type="button" data-cat="shop">Shops</button><button class="cat-btn" type="button" data-cat="service">Services</button><button class="cat-btn" type="button" data-cat="alcohol">🍺 Alcohol</button></div></div></div><div class="wrap"><div class="plan"><span class="street s-top">Clayton Street</span><span class="street s-bottom">Grainger Street</span><span class="street s-left">Nun Street</span><span class="street s-right">Nelson Street</span><div id="lanes" class="lanes"></div><div id="mapBubble" class="map-bubble" hidden></div></div></div><div class="legend"><span><i style="background:var(--eat)"></i>Eat & drink</span><span><i style="background:var(--groc)"></i>Groceries</span><span><i style="background:var(--shop)"></i>Shop</span><span><i style="background:var(--svc)"></i>Services</span><span class="alcohol-key">● Alcohol confirmed</span></div><div class="unplaced"><b>Current / recent traders needing exact-position verification</b><div id="unplaced"></div></div><section class="directory-section" aria-labelledby="directoryHeading"><div class="directory-head"><div><h3 id="directoryHeading">Grainger Market traders</h3><p>Detailed trader information follows the same search and category filters as the map. Selecting a stall narrows this list to that trader until you deselect it.</p></div><span id="directoryCount" class="directory-count" aria-live="polite"></span></div><div id="traderDirectory" class="directory-grid"></div></section><p class="foot">The 31 Aug 2026 research found that the official directory can lag real-world changes. Midsommar Bakery closed in August 2026; Rice Kitchen appears current but lacks a confirmed unit; The Forest Boost has conflicting published unit references. V2 keeps those uncertainties visible instead of inventing precise geometry. Alcohol indicators are shown only where current evidence was found; absence of the indicator does not prove that a trader never offers alcohol.</p></main></div></section></div><script src="./hub-data.js"></script><script src="./hub-v2.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Newcastle City Centre Explorer</title>
+<link rel="stylesheet" href="./hub.css">
+<link rel="stylesheet" href="./hub-v3.css">
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div><small>Newcastle city centre</small><h1>Explorer hub</h1></div>
+    <a href="./index.html">Open original coffee guide ↗</a>
+  </div>
+  <div class="tabs" aria-label="Choose map">
+    <button class="tab on" type="button" data-v="coffee">☕ Coffee map</button>
+    <button class="tab" type="button" data-v="market">🏛 Grainger Market</button>
+  </div>
+  <section id="coffee" class="view on">
+    <iframe class="frame" src="./index.html" title="Newcastle Top 10 coffee map"></iframe>
+    <section class="coffee-research" aria-labelledby="coffeeResearchHeading">
+      <div class="coffee-research-head">
+        <div><h2 id="coffeeResearchHeading">Coffee guide · detailed menus & prices</h2><p>The map above stays simple; this section adds researched menu highlights, current price examples and source context. Delivery-platform prices are explicitly labelled because they can differ from walk-in prices.</p></div>
+        <span id="coffeeResearchCount" class="research-count"></span>
+      </div>
+      <div id="coffeeDirectory" class="coffee-detail-grid"></div>
+      <div class="data-note"><b>Price freshness:</b> researched 31 Aug 2026. A blank or “not published” price means the research did not verify a current figure — it does not mean the item is free or unavailable.</div>
+    </section>
+  </section>
+  <section id="market" class="view">
+    <div class="market"><main class="panel">
+      <div class="head">
+        <div><h2>Grainger Market indoor map</h2><div class="note">Indoor schematic using Arcade + Alleys 1–4 and published unit references. <b>Schematic / not to scale.</b></div></div>
+        <div class="filters">
+          <input id="ms" type="search" placeholder="Find trader, product or menu item…" aria-label="Search market traders, products and menu items">
+          <div class="cat-buttons" role="group" aria-label="Filter market traders">
+            <button class="cat-btn on" type="button" data-cat="all">All traders</button><button class="cat-btn" type="button" data-cat="eat">Eat & drink</button><button class="cat-btn" type="button" data-cat="groceries">Groceries</button><button class="cat-btn" type="button" data-cat="shop">Shops</button><button class="cat-btn" type="button" data-cat="service">Services</button><button class="cat-btn" type="button" data-cat="alcohol">🍺 Alcohol</button>
+          </div>
+        </div>
+      </div>
+      <div class="wrap"><div class="plan"><span class="street s-top">Clayton Street</span><span class="street s-bottom">Grainger Street</span><span class="street s-left">Nun Street</span><span class="street s-right">Nelson Street</span><div id="lanes" class="lanes"></div><div id="mapBubble" class="map-bubble" hidden></div></div></div>
+      <div class="legend"><span><i style="background:var(--eat)"></i>Eat & drink</span><span><i style="background:var(--groc)"></i>Groceries</span><span><i style="background:var(--shop)"></i>Shop</span><span><i style="background:var(--svc)"></i>Services</span><span class="alcohol-key">● Confirmed alcohol information</span></div>
+      <div class="unplaced"><b>Current / recent traders needing exact-position verification</b><div id="unplaced"></div></div>
+      <section class="directory-section" aria-labelledby="directoryHeading">
+        <div class="directory-head"><div><h3 id="directoryHeading">Grainger Market traders · detailed research</h3><p>Search now includes products and menu items. Open a trader for detailed items, prices, price context and research sources. Selecting a stall still narrows this list to that trader until you deselect it.</p></div><span id="directoryCount" class="directory-count" aria-live="polite"></span></div>
+        <div id="traderDirectory" class="directory-grid"></div>
+      </section>
+      <div class="data-note"><b>Research status:</b> the 31 Aug 2026 deep-research census found 80 names on the current official market directory, but online tenancy data can lag reality. Midsommar Bakery is known closed; some unit references remain uncertain. Market-wide fallback hours are shown only where trader-specific hours were not verified. Slow Shopping currently runs Tuesdays 14:00–16:00.</div>
+    </main></div>
+  </section>
+</div>
+<script src="./hub-data.js"></script>
+<script src="./hub-research.js"></script>
+<script src="./hub-v3.js"></script>
+</body>
+</html>
