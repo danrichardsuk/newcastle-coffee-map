@@ -1,7 +1,7 @@
 /* V5 Explorer Scores: confidence-aware scoring UI for food & drink venues. */
 (function(){
   const dims=[['quality','Quality'],['value','Value'],['service','Service'],['variety','Variety'],['atmosphere','Atmosphere'],['reliability','Reliability']];
-  const esc=s=>String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m]));
+  const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   function confLabel(c){return c>=.80?'High confidence':c>=.60?'Medium confidence':'Limited evidence';}
   function scoreMarkup(name,compact=false){
     const s=explorerScoreFor(name); if(!s)return '';
